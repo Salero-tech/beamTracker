@@ -4,5 +4,5 @@ class Mesurepoints:
 
 class MovingHead:
     height = 15
-    fromRight = 3
+    fromLeft = 5
     fromFront = 10
