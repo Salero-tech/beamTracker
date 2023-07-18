@@ -11,7 +11,6 @@ if (distanceX + distanceY < Mesurepoints.distance):
 #distance form the backwall
 winkelWand = math.acos((Mesurepoints.distance**2 + distanceY**2 - distanceX**2)/(2 * Mesurepoints.distance * distanceY))
 walldistance = distanceY * math.sin(winkelWand)
-print(f"distance back wall: {walldistance}")
 
 #pan
 distanceHeadPersonX = MovingHead.fromFront - walldistance
