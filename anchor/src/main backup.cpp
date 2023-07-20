@@ -8,59 +8,30 @@
 #include <Arduino.h>
 #include <SPI.h>
 #include <DW1000Ranging.h>
-#include <stdint.h>
-
-#define ANCHOR_COUNT 2
-
-typedef struct {
-  uint8_t pinRST, pinIRQ, pinSS;
-  char macAdr[];
-}anchorDef_t;
 
 // connection pins
 const uint8_t PIN_RST = 9; // reset pin
 const uint8_t PIN_IRQ = 2; // irq pin
 const uint8_t PIN_SS = SS; // spi select pin
 
-anchorDef_t anchorDef[ANCHOR_COUNT]; //TODO: implement
-
-DW1000RangingClass rangeSensors[ANCHOR_COUNT];
-
 void setup() {
   Serial.begin(115200);
   delay(1000);
-  for (uint8_t i = 0; i < ANCHOR_COUNT; i++)
-  {
-    //create obj
-    rangeSensors[i] = DW1000RangingClass();
-    //init the configuration
-    rangeSensors[i].initCommunication(anchorDef[i].pinRST, anchorDef[i].pinSS, anchorDef[i].pinIRQ); //Reset, CS, IRQ pin
-  }
-  
+  //init the configuration
+  DW1000Ranging.initCommunication(PIN_RST, PIN_SS, PIN_IRQ); //Reset, CS, IRQ pin
   //define the sketch as anchor. It will be great to dynamically change the type of module
-  for (uint8_t i = 0; i < ANCHOR_COUNT; i++)
-  {
-    rangeSensors[i].attachNewRange(newRange);
-    rangeSensors[i].attachBlinkDevice(newBlink);
-    rangeSensors[i].attachInactiveDevice(inactiveDevice);
-    //Enable the filter to smooth the distance
-    //rangeSensors[i].useRangeFilter(true);
-  }
-  
+  DW1000Ranging.attachNewRange(newRange);
+  DW1000Ranging.attachBlinkDevice(newBlink);
+  DW1000Ranging.attachInactiveDevice(inactiveDevice);
+  //Enable the filter to smooth the distance
+  //DW1000Ranging.useRangeFilter(true);
   
   //we start the module as an anchor
-  for (uint8_t i = 0; i < ANCHOR_COUNT; i++)
-  {
-    rangeSensors[i].startAsAnchor(anchorDef[i].macAdr, DW1000.MODE_LONGDATA_RANGE_ACCURACY);
-  }
-  
+  DW1000Ranging.startAsAnchor("82:17:5B:D5:A9:9A:E2:9C", DW1000.MODE_LONGDATA_RANGE_ACCURACY);
 }
 
 void loop() {
-  for (uint8_t i = 0; i < ANCHOR_COUNT; i++)
-  {
-    rangeSensors[i].loop();
-  }
+  DW1000Ranging.loop();
 }
 
 void newRange() {
